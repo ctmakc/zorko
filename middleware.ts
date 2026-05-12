@@ -1,8 +1,13 @@
 import { createServerClient } from '@supabase/ssr'
 import { NextRequest, NextResponse } from 'next/server'
 
+const DEMO = !process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project')
+
 export async function middleware(req: NextRequest) {
   let res = NextResponse.next({ request: req })
+
+  // Demo mode: no Supabase configured — skip auth entirely
+  if (DEMO) return res
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,11 +34,6 @@ export async function middleware(req: NextRequest) {
 
   const { data: { user } } = await supabase.auth.getUser()
   const path = req.nextUrl.pathname
-
-  // If env vars not set, skip auth (demo mode)
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL.includes('your-project')) {
-    return res
-  }
 
   const publicPaths = ['/login', '/auth/callback']
   if (!user && !publicPaths.some(p => path.startsWith(p))) {
