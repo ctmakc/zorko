@@ -117,18 +117,21 @@ export async function generateInsights(dataBundle: Record<string, unknown>) {
   const body = {
     model: 'gemini-2.5-flash',
     project,
-    contents: [{ role: 'user', parts: [{ text: prompt }] }],
-    systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
-    generationConfig: { responseMimeType: 'application/json', temperature: 0.7 },
+    request: {
+      model: 'models/gemini-2.5-flash',
+      contents: [{ role: 'user', parts: [{ text: prompt }] }],
+      systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] },
+      generationConfig: { responseMimeType: 'application/json', temperature: 0.7 },
+    },
   }
 
   const res = await post(ENDPOINT, body, token) as {
-    candidates?: Array<{ content: { parts: Array<{ text: string }> } }>
+    response?: { candidates?: Array<{ content: { parts: Array<{ text: string }> } }> }
     error?: { message: string }
   }
 
   if (res.error) throw new Error(`Gemini error: ${res.error.message}`)
-  const text = res.candidates?.[0]?.content?.parts?.[0]?.text
+  const text = res.response?.candidates?.[0]?.content?.parts?.[0]?.text
   if (!text) throw new Error(`Empty Gemini response: ${JSON.stringify(res).slice(0, 200)}`)
   return JSON.parse(text) as {
     brief: string; headline: string
