@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useCallback } from 'react'
+import Link from 'next/link'
 import { TodayView } from './TodayView'
 import { PulseView } from './PulseView'
 import { WhispersView } from './WhispersView'
@@ -93,6 +94,8 @@ export function ZorkoDashboard({ initial }: { initial: DashboardData }) {
           <span>{time}</span>
           <span style={{ color: 'var(--signal)' }}>●</span>
           <span>фокус активен</span>
+          <span style={{ width: 1, height: 14, background: 'var(--line)', display: 'inline-block' }} />
+          <Link href="/settings" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '.12em' }}>⚙ настройки</Link>
         </div>
       </div>
 

@@ -18,15 +18,22 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (user) {
-      const { data: existing } = await supabase.from('connectors').select('*').eq('tenant_id', user.id)
+      const { data: existing, error } = await supabase
+        .from('connectors').select('*').eq('tenant_id', user.id)
+      if (error) {
+        console.error('[/api/connectors] DB error:', error.message)
+        return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      }
       const existingMap = new Map((existing ?? []).map(c => [c.type, c]))
-
       return NextResponse.json(ALL_CONNECTOR_TYPES.map(def => ({
         ...def,
         connector: existingMap.get(def.type) ?? null,
       })))
     }
-  } catch {}
+  } catch (err) {
+    console.error('[/api/connectors] Unexpected error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 
   return NextResponse.json(ALL_CONNECTOR_TYPES.map(def => ({ ...def, connector: null })))
 }

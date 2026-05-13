@@ -2,6 +2,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { ConnectorCard } from '@/components/settings/ConnectorCard'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 interface ConnectorDef {
   type: string; label: string; desc: string; ready: boolean
@@ -11,6 +12,12 @@ interface ConnectorDef {
 
 export default function SettingsPage() {
   const [defs, setDefs] = useState<ConnectorDef[]>([])
+  const router = useRouter()
+
+  const handleLogout = useCallback(async () => {
+    await fetch('/api/auth/logout', { method: 'POST' })
+    router.push('/login')
+  }, [router])
 
   const reload = useCallback(async () => {
     const r = await fetch('/api/connectors')
@@ -30,9 +37,15 @@ export default function SettingsPage() {
           <h1 style={{ fontFamily: 'var(--serif)', fontWeight: 400, fontStyle: 'italic', fontSize: 40, lineHeight: 1, letterSpacing: '-0.02em', color: 'var(--ink)' }}>Источники данных</h1>
           <p style={{ fontFamily: 'var(--sans)', fontSize: 13, color: 'var(--muted)', marginTop: 8 }}>Подключите реальные данные — ЗОРКО заменит демо на ваши</p>
         </div>
-        <Link href="/" style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', padding: '8px 14px', border: '1px solid var(--line)' }}>
-          ← Вернуться к дашборду
-        </Link>
+        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+          <Link href="/" style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--muted)', textDecoration: 'none', padding: '8px 14px', border: '1px solid var(--line)' }}>
+            ← Дашборд
+          </Link>
+          <button onClick={handleLogout}
+            style={{ fontFamily: 'var(--mono)', fontSize: 10, letterSpacing: '.12em', textTransform: 'uppercase', color: 'var(--muted)', background: 'none', padding: '8px 14px', border: '1px solid var(--line)', cursor: 'pointer' }}>
+            Выйти →
+          </button>
+        </div>
       </div>
 
       <div style={{ maxWidth: 720, margin: '0 auto', padding: '32px 24px' }}>

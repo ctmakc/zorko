@@ -8,10 +8,21 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser()
 
     if (user) {
-      const { data } = await supabase.from('briefs').select('*').eq('tenant_id', user.id).order('created_at', { ascending: false }).limit(1).single()
+      const { data, error } = await supabase
+        .from('briefs').select('*')
+        .eq('tenant_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(1).single()
+      if (error && error.code !== 'PGRST116') {
+        console.error('[/api/brief] DB error:', error.message)
+        return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      }
       if (data) return NextResponse.json(data)
     }
-  } catch {}
+  } catch (err) {
+    console.error('[/api/brief] Unexpected error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 
   return NextResponse.json(getMockBrief())
 }

@@ -9,16 +9,23 @@ export async function GET() {
 
     if (user) {
       const { data, error } = await supabase
-        .from('metrics').select('*').eq('tenant_id', user.id)
+        .from('metrics').select('*')
+        .eq('tenant_id', user.id)
         .order('recorded_at', { ascending: false })
-      if (!error && data?.length) {
-        // deduplicate: latest snapshot per key
+      if (error) {
+        console.error('[/api/pulse] DB error:', error.message)
+        return NextResponse.json({ error: 'Database error' }, { status: 500 })
+      }
+      if (data?.length) {
         const seen = new Set<string>()
         const unique = data.filter(m => { if (seen.has(m.key)) return false; seen.add(m.key); return true })
         return NextResponse.json(unique)
       }
     }
-  } catch {}
+  } catch (err) {
+    console.error('[/api/pulse] Unexpected error:', err)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+  }
 
   return NextResponse.json(getMockMetrics())
 }

@@ -72,8 +72,12 @@ async function processTenant(tenant: { id: string; name: string; city: string })
 async function runCycle() {
   console.log('[Scheduler] Starting sync cycle', new Date().toISOString())
   const tenants = await getAllTenants()
-  await Promise.allSettled(tenants.map(processTenant))
-  console.log('[Scheduler] Cycle complete')
+  const results = await Promise.allSettled(tenants.map(processTenant))
+  const failed = results.filter(r => r.status === 'rejected')
+  if (failed.length) {
+    failed.forEach(r => console.error('[Scheduler] Tenant failed:', (r as PromiseRejectedResult).reason))
+  }
+  console.log(`[Scheduler] Cycle complete. ${results.length - failed.length}/${results.length} tenants OK`)
 }
 
 console.log('[ЗОРКО Worker] Starting...')
