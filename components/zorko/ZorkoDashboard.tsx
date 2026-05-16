@@ -5,6 +5,7 @@ import { TodayView } from './TodayView'
 import { PulseView } from './PulseView'
 import { WhispersView } from './WhispersView'
 import { ForecastView } from './ForecastView'
+import { UpgradeCTA } from '@/components/billing/UpgradeCTA'
 import type { DashboardData, Whisper } from '@/lib/types'
 
 const TABS = [
@@ -16,7 +17,13 @@ const TABS = [
 
 type Tab = typeof TABS[number]['k']
 
-export function ZorkoDashboard({ initial }: { initial: DashboardData }) {
+interface DashboardProps {
+  initial: DashboardData
+  tier?: 'free' | 'trial' | 'pro'
+  daysLeftInTrial?: number | null
+}
+
+export function ZorkoDashboard({ initial, tier = 'free', daysLeftInTrial }: DashboardProps) {
   const [tab, setTab] = useState<Tab>('today')
   const [data, setData] = useState(initial)
   const [now, setNow] = useState<Date | null>(null)
@@ -94,6 +101,8 @@ export function ZorkoDashboard({ initial }: { initial: DashboardData }) {
           <span>{time}</span>
           <span style={{ color: 'var(--signal)' }}>●</span>
           <span>фокус активен</span>
+          <span style={{ width: 1, height: 14, background: 'var(--line)', display: 'inline-block' }} />
+          <UpgradeCTA tier={tier} daysLeftInTrial={daysLeftInTrial} />
           <span style={{ width: 1, height: 14, background: 'var(--line)', display: 'inline-block' }} />
           <Link href="/settings" style={{ color: 'var(--muted)', textDecoration: 'none', letterSpacing: '.12em' }}>⚙ настройки</Link>
         </div>

@@ -35,7 +35,7 @@ export async function middleware(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const path = req.nextUrl.pathname
 
-  const publicPaths = ['/login', '/auth/callback']
+  const publicPaths = ['/login', '/auth/callback', '/pricing']
   if (!user && !publicPaths.some(p => path.startsWith(p))) {
     return NextResponse.redirect(new URL('/login', req.url))
   }
@@ -48,5 +48,5 @@ export async function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/auth).*)'],
+  matcher: ['/((?!_next/static|_next/image|favicon.ico|api/auth|api/stripe/webhook).*)'],
 }
