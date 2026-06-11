@@ -1,6 +1,45 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getSubscription } from '@/lib/subscription'
 import { PricingClient } from './PricingClient'
+
+export const metadata: Metadata = {
+  title: 'Pricing — ZORKO AI Morning Brief Dashboard',
+  description: 'Free plan with 3 briefs/week. Pro at $19/month — daily AI briefs, unlimited connectors, whispers, focus mode, 7-day forecast. 7-day free trial.',
+  alternates: {
+    canonical: 'https://zorko-three.vercel.app/pricing',
+    languages: {
+      'ru': 'https://zorko-three.vercel.app/ru/tseny',
+      'en': 'https://zorko-three.vercel.app/pricing',
+    },
+  },
+}
+
+const softwareSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'ZORKO — AI Morning Brief Dashboard',
+  applicationCategory: 'BusinessApplication',
+  operatingSystem: 'Web',
+  url: 'https://zorko-three.vercel.app',
+  offers: [
+    {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'USD',
+      name: 'Free',
+      description: '1 data source, 3 AI briefs per week, demo mode',
+    },
+    {
+      '@type': 'Offer',
+      price: '19',
+      priceCurrency: 'USD',
+      billingDuration: 'P1M',
+      name: 'Pro',
+      description: 'Unlimited connectors, daily AI briefs, real-time whispers, Focus mode, 7-day forecast. 7-day free trial.',
+    },
+  ],
+}
 
 export default async function PricingPage() {
   const sub = await getSubscription()
@@ -9,6 +48,7 @@ export default async function PricingPage() {
 
   return (
     <div style={{ minHeight: '100vh', background: 'var(--bg)', fontFamily: 'var(--sans)' }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareSchema) }} />
       {/* Header */}
       <div style={{ borderBottom: '2px solid var(--ink)', padding: '28px 32px 24px', display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', background: 'var(--bg)' }}>
         <div>

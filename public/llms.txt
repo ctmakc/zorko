@@ -1,0 +1,36 @@
+# ЗОРКО / ZORKO
+
+ZORKO is an AI morning brief dashboard for small business owners.
+
+## What it does
+AI analyzes connected data sources (Google Places reviews, social media, sales data, weather) and delivers a personalized daily brief every morning with:
+- Key business insights from the previous day
+- Whispers: subtle signals and micro-insights worth watching
+- Focus priority: one clear action to drive the day
+- 7-day forecast based on trends
+
+## Who it's for
+Small business owners who don't have time to manually analyze data but need to stay on top of what's happening in their business. Particularly useful for: retail store owners, restaurant owners, service businesses (salons, clinics, repair shops).
+
+## How it works
+1. Connect data sources (Google Places reviews, sales, social)
+2. Configure your morning brief preferences
+3. Receive a daily AI-generated brief with insights, whispers, and focus priorities
+
+## Pricing
+- Free: 1 data source, 3 AI briefs/week, basic analytics, demo mode
+- Pro: $19/month — unlimited connectors, daily AI briefs, real-time whispers, Focus mode, 7-day forecast
+- 7-day free trial on Pro (no charge until day 7)
+
+## Technical
+- Built with Next.js 15, Supabase, Google Gemini AI
+- Connector system: Google Places reviews, weather, sales (more connectors in roadmap: POS, inventory, Telegram, Google Calendar)
+
+## Languages
+Russian (primary), English
+
+## URL
+https://zorko-three.vercel.app
+
+## Contact
+For partnerships and integrations: https://zorko-three.vercel.app/about

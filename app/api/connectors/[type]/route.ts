@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
+import { FREE_CONNECTOR_LIMIT, getTier } from '@/lib/stripe'
 
 type Params = { params: Promise<{ type: string }> }
 
@@ -37,6 +38,33 @@ export async function PUT(req: NextRequest, { params }: Params) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+  // --- Freemium gate: check connector limit for free/expired-trial users ---
+  if (body.enabled) {
+    const { data: tenant } = await supabase
+      .from('tenants')
+      .select('subscription_status, trial_ends_at')
+      .eq('id', user.id)
+      .single()
+
+    const tier = getTier(tenant?.subscription_status, tenant?.trial_ends_at)
+
+    if (tier === 'free') {
+      // Count currently enabled connectors (excluding this one, since upsert may already exist)
+      const { data: existing } = await supabase
+        .from('connectors')
+        .select('type, enabled')
+        .eq('tenant_id', user.id)
+
+      const enabledOther = (existing ?? []).filter(c => c.enabled && c.type !== type).length
+      if (enabledOther >= FREE_CONNECTOR_LIMIT) {
+        return NextResponse.json(
+          { error: 'connector_limit', message: 'Free plan allows only 1 connector. Upgrade to Pro.' },
+          { status: 403 }
+        )
+      }
+    }
+  }
 
   const { error } = await supabase.from('connectors').upsert({
     tenant_id: user.id,

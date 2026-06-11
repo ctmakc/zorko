@@ -20,6 +20,21 @@ const eslintConfig = [
       "next-env.d.ts",
     ],
   },
+  // Marketing / blog pages contain natural prose — allow apostrophes and quotes in JSX
+  {
+    files: [
+      "app/about/**",
+      "app/features/**",
+      "app/use-cases/**",
+      "app/blog/**",
+      "app/compare/**",
+      "app/ru/**",
+      "components/marketing/**",
+    ],
+    rules: {
+      "react/no-unescaped-entities": "off",
+    },
+  },
 ];
 
 export default eslintConfig;
